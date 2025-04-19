@@ -56,8 +56,25 @@ sed -i "s|^Server=.*|Server=zabbix.tietokettu.net|" "$ZABBIX_CONFIG"
 sed -i "s|^ServerActive=.*|ServerActive=zabbix.tietokettu.net|" "$ZABBIX_CONFIG"
 sed -i "s|^Hostname=.*|Hostname=${HOSTNAME}|" "$ZABBIX_CONFIG"
 
+# 9. Enable port 10050 in UFW if it's installed and active
+if command -v ufw >/dev/null 2>&1; then
+  if ufw status | grep -q "Status: active"; then
+    echo "[INFO] UFW is active — allowing port 10050 for Zabbix Agent..."
+    ufw allow 10050/tcp
+  else
+    echo "[INFO] UFW is installed but not active — skipping port rule"
+  fi
+else
+  echo "[INFO] UFW not installed — skipping firewall rule"
+fi
+
 # 9. Start and enable the agent
 echo "[INFO] Enabling and starting Zabbix agent2..."
+
+
+
 systemctl enable --now zabbix-agent2
+systemctl restart zabbix-agent2
+
 
 echo "[✅ SUCCESS] Zabbix Agent 2 installed and configured for host: $HOSTNAME"
