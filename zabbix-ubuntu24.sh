@@ -8,6 +8,14 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# 🔐 Temporary fix for missing libssl1.1 on Ubuntu 24.04
+echo "[INFO] Adding focal-security to fetch libssl1.1..."
+echo "deb http://security.ubuntu.com/ubuntu focal-security main" > /etc/apt/sources.list.d/focal-security.list
+apt update
+apt install -y libssl1.1
+rm /etc/apt/sources.list.d/focal-security.list
+echo "[INFO] Removed temporary focal-security repo after installing libssl1.1"
+
 echo "[INFO] Downloading Zabbix repo package..."
 wget -q https://repo.zabbix.com/zabbix/7.2/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.2+ubuntu20.04_all.deb
 
