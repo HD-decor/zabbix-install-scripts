@@ -9,8 +9,8 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # 🔐 Temporary fix for missing libssl1.1 on Ubuntu 24.04
-echo "[INFO] Adding focal-security to fetch libssl1.1..."
-echo "deb http://security.ubuntu.com/ubuntu focal-security main" > /etc/apt/sources.list.d/focal-security.list
+echo "[INFO] Adding focal-security repo to install libssl1.1..."
+echo "deb http://security.ubuntu.com/ubuntu focal-security main universe" > /etc/apt/sources.list.d/focal-security.list
 apt update
 apt install -y libssl1.1
 rm /etc/apt/sources.list.d/focal-security.list
@@ -59,4 +59,4 @@ sed -i "s|^Hostname=.*|Hostname=${HOSTNAME}|" "$ZABBIX_CONFIG"
 echo "[INFO] Enabling and starting Zabbix agent2..."
 systemctl enable --now zabbix-agent2
 
-echo "[SUCCESS] Zabbix Agent 2 installed and configured for host: $HOSTNAME"
+echo "[✅ SUCCESS] Zabbix Agent 2 installed and configured for host: $HOSTNAME"
