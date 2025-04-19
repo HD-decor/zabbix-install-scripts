@@ -22,14 +22,11 @@ if grep -q "noble" "$ZABBIX_LIST"; then
   echo "# NOTE: Using 'focal' temporarily because Zabbix hasn't released for 'noble'" >> "$ZABBIX_LIST"
 fi
 
-# 🛠 Fix Ookla Speedtest repo if present
+# 🔥 Remove broken Ookla repo if it exists
 SPEEDTEST_LIST="/etc/apt/sources.list.d/ookla_speedtest-cli.list"
 if [ -f "$SPEEDTEST_LIST" ]; then
-  if grep -q "noble" "$SPEEDTEST_LIST"; then
-    echo "[PATCH] Replacing 'noble' with 'jammy' in $SPEEDTEST_LIST"
-    sed -i 's/noble/jammy/g' "$SPEEDTEST_LIST"
-    echo "# NOTE: Using 'jammy' temporarily because Ookla hasn't released for 'noble'" >> "$SPEEDTEST_LIST"
-  fi
+  echo "[INFO] Removing unsupported Ookla speedtest repo"
+  rm -f "$SPEEDTEST_LIST"
 fi
 
 echo "[INFO] Updating apt cache..."
