@@ -14,7 +14,23 @@ wget -q https://repo.zabbix.com/zabbix/7.2/release/ubuntu/pool/main/z/zabbix-rel
 echo "[INFO] Installing Zabbix repo..."
 dpkg -i zabbix-release_latest_7.2+ubuntu20.04_all.deb
 
-sed -i 's/noble/focal/g' /etc/apt/sources.list.d/zabbix.list
+# 🛠 Force Zabbix repo to use 'focal' instead of 'noble'
+ZABBIX_LIST="/etc/apt/sources.list.d/zabbix.list"
+if grep -q "noble" "$ZABBIX_LIST"; then
+  echo "[PATCH] Replacing 'noble' with 'focal' in $ZABBIX_LIST"
+  sed -i 's/noble/focal/g' "$ZABBIX_LIST"
+  echo "# NOTE: Using 'focal' temporarily because Zabbix hasn't released for 'noble'" >> "$ZABBIX_LIST"
+fi
+
+# 🛠 Fix Ookla Speedtest repo if present
+SPEEDTEST_LIST="/etc/apt/sources.list.d/ookla_speedtest-cli.list"
+if [ -f "$SPEEDTEST_LIST" ]; then
+  if grep -q "noble" "$SPEEDTEST_LIST"; then
+    echo "[PATCH] Replacing 'noble' with 'jammy' in $SPEEDTEST_LIST"
+    sed -i 's/noble/jammy/g' "$SPEEDTEST_LIST"
+    echo "# NOTE: Using 'jammy' temporarily because Ookla hasn't released for 'noble'" >> "$SPEEDTEST_LIST"
+  fi
+fi
 
 echo "[INFO] Updating apt cache..."
 apt update
