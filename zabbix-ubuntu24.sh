@@ -14,6 +14,8 @@ wget -q https://repo.zabbix.com/zabbix/7.2/release/ubuntu/pool/main/z/zabbix-rel
 echo "[INFO] Installing Zabbix repo..."
 dpkg -i zabbix-release_latest_7.2+ubuntu20.04_all.deb
 
+sed -i 's/noble/focal/g' /etc/apt/sources.list.d/zabbix.list
+
 echo "[INFO] Updating apt cache..."
 apt update
 
