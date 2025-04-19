@@ -57,15 +57,24 @@ sed -i "s|^ServerActive=.*|ServerActive=zabbix.tietokettu.net|" "$ZABBIX_CONFIG"
 sed -i "s|^Hostname=.*|Hostname=${HOSTNAME}|" "$ZABBIX_CONFIG"
 
 # 9. Enable port 10050 in UFW if it's installed and active
+
 if command -v ufw >/dev/null 2>&1; then
   if ufw status | grep -q "Status: active"; then
-    echo "[INFO] UFW is active — allowing port 10050 for Zabbix Agent..."
+    echo "[INFO] UFW is active — allowing port 10050..."
     ufw allow 10050/tcp
   else
-    echo "[INFO] UFW is installed but not active — skipping port rule"
+    echo "[INFO] UFW is installed but inactive — using iptables instead..."
+    iptables -I INPUT -p tcp --dport 10050 -j ACCEPT
+    echo "[INFO] Making iptables rule persistent..."
+    apt install -y iptables-persistent
+    netfilter-persistent save
   fi
 else
-  echo "[INFO] UFW not installed — skipping firewall rule"
+  echo "[INFO] UFW not installed — using iptables..."
+  iptables -I INPUT -p tcp --dport 10050 -j ACCEPT
+  echo "[INFO] Making iptables rule persistent..."
+  apt install -y iptables-persistent
+  netfilter-persistent save
 fi
 
 # 9. Start and enable the agent
